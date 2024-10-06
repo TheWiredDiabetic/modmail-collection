@@ -68,7 +68,7 @@ class Uptime_Status_Agent(commands.Cog):
     async def before_heartbeat(self):
         await self.bot.wait_until_ready()
 
-    @commands.command(name="set_heartbeat_uri", help="Sets the heartbeat URI (e.g. https://your-status-server.com/api/heartbeat).")
+    @commands.command(name="set_heartbeat_uri", help="Sets the heartbeat URI (e.g. https://your-status-server.com/api/heartbeat).", aliases=["set_uri"])
     @commands.is_owner()
     async def set_heartbeat_uri(self, ctx, uri):
         self.heartbeat_uri = uri
@@ -82,7 +82,7 @@ class Uptime_Status_Agent(commands.Cog):
         )
         await ctx.send(embed=embed)
 
-    @commands.command(name="set_heartbeat_interval", help="Sets the heartbeat interval in seconds.")
+    @commands.command(name="set_heartbeat_interval", help="Sets the heartbeat interval in seconds.", aliases=["set_interval"])
     @commands.is_owner()
     async def set_heartbeat_interval(self, ctx, interval: int):
         self.heartbeat_interval = interval
@@ -97,7 +97,7 @@ class Uptime_Status_Agent(commands.Cog):
         )
         await ctx.send(embed=embed)
 
-    @commands.command(name="get_configuration", help="Returns the plugins current configuration in JSON format.")
+    @commands.command(name="get_configuration", help="Returns the plugins current configuration in JSON format.", aliases=["get_config"])
     @commands.is_owner()
     async def get_configuration(self, ctx):
         embed = discord.Embed(
@@ -108,7 +108,7 @@ class Uptime_Status_Agent(commands.Cog):
         await ctx.send(embed=embed)
         print("Sent configuration!")
 
-    @commands.command(name="dump_configuration", help="Dumps the plugins current configuration in JSON format.") 
+    @commands.command(name="dump_configuration", help="Dumps the plugins current configuration in JSON format.", aliases=["dump_config"]) 
     @commands.is_owner()
     async def dump_configuration(self, ctx):
         embed = discord.Embed(
