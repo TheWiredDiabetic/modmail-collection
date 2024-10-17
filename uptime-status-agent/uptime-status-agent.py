@@ -98,8 +98,8 @@ class Uptime_Status_Agent(commands.Cog):
         await ctx.send(embed=embed)
 
    @commands.command(name="get_configuration", help="Returns the plugin's current configuration in JSON format.", aliases=["get_config"])
-    @commands.is_owner()
-    async def get_configuration(self, ctx):
+   @commands.is_owner()
+   async def get_configuration(self, ctx):
         embed = discord.Embed(
             title="⚙ - Current Configuration",
             description="```json\n" + json.dumps(self.config, indent=4) + "\n```",
