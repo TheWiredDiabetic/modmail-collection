@@ -97,16 +97,17 @@ class Uptime_Status_Agent(commands.Cog):
         )
         await ctx.send(embed=embed)
 
-    @commands.command(name="get_configuration", help="Returns the plugins current configuration in JSON format.", aliases=["get_config"])
+   @commands.command(name="get_configuration", help="Returns the plugin's current configuration in JSON format.", aliases=["get_config"])
     @commands.is_owner()
     async def get_configuration(self, ctx):
         embed = discord.Embed(
             title="⚙ - Current Configuration",
-            description="```json" + json.dumps(self.config, indent=4) + "```",
+            description="```json\n" + json.dumps(self.config, indent=4) + "\n```",
             color=discord.Color.purple()
         )
         await ctx.send(embed=embed)
         print("Sent configuration!")
+
 
     @commands.command(name="dump_configuration", help="Dumps the plugins current configuration in JSON format.", aliases=["dump_config"]) 
     @commands.is_owner()
@@ -126,5 +127,9 @@ async def setup(bot):
 
 # Uninitialize plugin
 async def teardown(bot):
-    await bot.remove_cog("Uptime_Status_Agent")
-    print("Unloaded 'uptime-status-agent' plugin!")
+    cog = bot.get_cog("Uptime_Status_Agent")
+    if cog:
+        cog.heartbeat.cancel()
+        await bot.remove_cog("Uptime_Status_Agent")
+        print("Unloaded 'uptime-status-agent' plugin!")
+
