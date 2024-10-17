@@ -11,6 +11,7 @@ from dotenv import load_dotenv
 # Load environment variables from .env file
 load_dotenv()
 
+
 def load_configuration():
     # Check if environment variables exist
     heartbeat_uri = os.getenv("HEARTBEAT_URI")
@@ -21,24 +22,33 @@ def load_configuration():
         try:
             with open("config.json", "r") as f:
                 config = json.load(f)
-                heartbeat_uri = heartbeat_uri or config.get("heartbeat_uri", "https://your-status-server.com/api/heartbeat")
-                heartbeat_interval = heartbeat_interval or config.get("heartbeat_interval", 60)
-                return {"heartbeat_uri": heartbeat_uri, "heartbeat_interval": int(heartbeat_interval)}
+                heartbeat_uri = heartbeat_uri or config.get(
+                    "heartbeat_uri", "https://your-status-server.com/api/heartbeat"
+                )
+                heartbeat_interval = heartbeat_interval or config.get(
+                    "heartbeat_interval", 60
+                )
+                return {
+                    "heartbeat_uri": heartbeat_uri,
+                    "heartbeat_interval": int(heartbeat_interval),
+                }
         except:
             # Fallback if both config.json and env are not available
             return {
                 "heartbeat_uri": "https://your-status-server.com/api/heartbeat",
-                "heartbeat_interval": 60
+                "heartbeat_interval": 60,
             }
     else:
         return {
             "heartbeat_uri": heartbeat_uri,
-            "heartbeat_interval": int(heartbeat_interval)
+            "heartbeat_interval": int(heartbeat_interval),
         }
+
 
 def save_configuration(config):
     with open("config.json", "w") as f:
         json.dump(config, f, indent=4)
+
 
 class Uptime_Status_Agent(commands.Cog):
     def __init__(self, bot):
@@ -55,7 +65,7 @@ class Uptime_Status_Agent(commands.Cog):
     @tasks.loop(seconds=60)
     async def heartbeat(self):
         async with aiohttp.ClientSession() as session:
-            try: 
+            try:
                 async with session.get(self.heartbeat_uri) as response:
                     if response.status == 200:
                         print("Heartbeat Sent")
@@ -68,62 +78,79 @@ class Uptime_Status_Agent(commands.Cog):
     async def before_heartbeat(self):
         await self.bot.wait_until_ready()
 
-    @commands.command(name="set_heartbeat_uri", help="Sets the heartbeat URI (e.g. https://your-status-server.com/api/heartbeat).", aliases=["set_uri"])
+    @commands.command(
+        name="set_heartbeat_uri",
+        help="Sets the heartbeat URI (e.g. https://your-status-server.com/api/heartbeat).",
+        aliases=["set_uri"],
+    )
     @commands.is_owner()
     async def set_heartbeat_uri(self, ctx, uri):
         self.heartbeat_uri = uri
         self.config["heartbeat_uri"] = uri
         save_configuration(self.config)
-        
+
         embed = discord.Embed(
             title="✔ - Updated URI!",
             description=f"Successfully updated the **Heartbeat URI** - the new heartbeat URI has been set to:\n``{uri}``",
-            color=discord.Color.green()
+            color=discord.Color.green(),
         )
         await ctx.send(embed=embed)
 
-    @commands.command(name="set_heartbeat_interval", help="Sets the heartbeat interval in seconds.", aliases=["set_interval"])
+    @commands.command(
+        name="set_heartbeat_interval",
+        help="Sets the heartbeat interval in seconds.",
+        aliases=["set_interval"],
+    )
     @commands.is_owner()
     async def set_heartbeat_interval(self, ctx, interval: int):
         self.heartbeat_interval = interval
         self.heartbeat.change_interval(seconds=interval)
         self.config["heartbeat_interval"] = interval
         save_configuration(self.config)
-        
+
         embed = discord.Embed(
             title="✔ - Updated heartbeat interval!",
             description=f"Successfully updated the **Heartbeat Interval** - the new Heartbeat interval has been set to `{interval}` seconds.",
-            color=discord.Color.blue()
+            color=discord.Color.blue(),
         )
         await ctx.send(embed=embed)
 
-    @commands.command(name="get_configuration", help="Returns the plugin's current configuration in JSON format.", aliases=["get_config"])
+    @commands.command(
+        name="get_configuration",
+        help="Returns the plugin's current configuration in JSON format.",
+        aliases=["get_config"],
+    )
     @commands.is_owner()
     async def get_configuration(self, ctx):
         embed = discord.Embed(
             title="⚙ - Current Configuration",
             description="```json\n" + json.dumps(self.config, indent=4) + "\n```",
-            color=discord.Color.purple()
+            color=discord.Color.purple(),
         )
         await ctx.send(embed=embed)
         print("Sent configuration!")
 
-
-    @commands.command(name="dump_configuration", help="Dumps the plugins current configuration in JSON format.", aliases=["dump_config"]) 
+    @commands.command(
+        name="dump_configuration",
+        help="Dumps the plugins current configuration in JSON format.",
+        aliases=["dump_config"],
+    )
     @commands.is_owner()
     async def dump_configuration(self, ctx):
-         embed = discord.Embed(
+        embed = discord.Embed(
             title="⚙ - Dump Configuration (JSON)",
             description="```json" + json.dumps(self.config, indent=4) + "```",
-            color=discord.Color.purple()
+            color=discord.Color.purple(),
         )
         await ctx.send(embed=embed)
         print("Dumped configuration!")
 
-# Initialize plugin 
+
+# Initialize plugin
 async def setup(bot):
     await bot.add_cog(Uptime_Status_Agent(bot))
     print("Loaded 'uptime-status-agent' plugin!")
+
 
 # Uninitialize plugin
 async def teardown(bot):
@@ -132,4 +159,3 @@ async def teardown(bot):
         cog.heartbeat.cancel()
         await bot.remove_cog("Uptime_Status_Agent")
         print("Unloaded 'uptime-status-agent' plugin!")
-
