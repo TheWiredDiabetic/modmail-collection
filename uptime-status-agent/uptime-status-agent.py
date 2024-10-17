@@ -76,8 +76,8 @@ class Uptime_Status_Agent(commands.Cog):
         save_configuration(self.config)
         
         embed = discord.Embed(
-            title="Heartbeat URI Updated",
-            description=f"Heartbeat URI has been set to:\n`{uri}`",
+            title="✔ - Updated URI!",
+            description=f"Successfully updated the **Heartbeat URI** - the new heartbeat URI has been set to:\n``{uri}``",
             color=discord.Color.green()
         )
         await ctx.send(embed=embed)
@@ -91,8 +91,8 @@ class Uptime_Status_Agent(commands.Cog):
         save_configuration(self.config)
         
         embed = discord.Embed(
-            title="Heartbeat Interval Updated",
-            description=f"Heartbeat interval has been set to `{interval}` seconds.",
+            title="✔ - Updated heartbeat interval!",
+            description=f"Successfully updated the **Heartbeat Interval** - the new Heartbeat interval has been set to `{interval}` seconds.",
             color=discord.Color.blue()
         )
         await ctx.send(embed=embed)
@@ -101,8 +101,8 @@ class Uptime_Status_Agent(commands.Cog):
     @commands.is_owner()
     async def get_configuration(self, ctx):
         embed = discord.Embed(
-            title="Current Configuration",
-            description=json.dumps(self.config, indent=4),
+            title="⚙ - Current Configuration",
+            description="```json" + json.dumps(self.config, indent=4) + "```",
             color=discord.Color.purple()
         )
         await ctx.send(embed=embed)
@@ -111,10 +111,10 @@ class Uptime_Status_Agent(commands.Cog):
     @commands.command(name="dump_configuration", help="Dumps the plugins current configuration in JSON format.", aliases=["dump_config"]) 
     @commands.is_owner()
     async def dump_configuration(self, ctx):
-        embed = discord.Embed(
-            title="Configuration Dump",
-            description=json.dumps(self.config, indent=4),
-            color=discord.Color.orange()
+         embed = discord.Embed(
+            title="⚙ - Dump Configuration (JSON)",
+            description="```json" + json.dumps(self.config, indent=4) + "```",
+            color=discord.Color.purple()
         )
         await ctx.send(embed=embed)
         print("Dumped configuration!")
